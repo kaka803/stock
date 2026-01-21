@@ -9,9 +9,25 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@gsap/react": "^2.1.2",
+    "bcryptjs": "^3.0.3",
+    "cookie": "^1.1.1",
+    "framer-motion": "^12.24.11",
+    "gsap": "^3.14.2",
+    "jsonwebtoken": "^9.0.3",
+    "lucide-react": "^0.562.0",
+    "mongoose": "^9.1.4",
     "next": "16.1.1",
+    "next-themes": "^0.4.6",
+    "nodemailer": "^7.0.12",
+    "pusher": "^5.3.2",
+    "pusher-js": "^8.4.0",
     "react": "19.2.3",
-    "react-dom": "19.2.3"
+    "react-dom": "19.2.3",
+    "recharts": "^3.6.0",
+    "stream-chat": "^9.28.0",
+    "stream-chat-react": "^13.13.3",
+    "zod": "^4.3.5"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
