@@ -107,6 +107,29 @@ export default function ForexDetailPage() {
                 })}
             </div>
 
+            {/* Mobile Subpage Navigation (Horizontal Scroll) */}
+            <div className="lg:hidden col-span-1 border-b border-gray-100 dark:border-zinc-800 mb-6 overflow-x-auto custom-scrollbar">
+                <div className="flex whitespace-nowrap px-2 gap-4">
+                    {[
+                        { name: 'About', href: '#' },
+                        { name: 'Financials', href: `/forex/${symbol}/financials` },
+                        { name: 'Option chain', href: `/forex/${symbol}/option-chain` },
+                        { name: 'Market Cap', href: `/forex/${symbol}/market-cap` },
+                        { name: 'P/E ratio', href: `/forex/${symbol}/pe-ratio` },
+                        { name: 'News', href: `/forex/${symbol}/news` }
+                    ].map((item, i) => {
+                        const isActive = i === 0;
+                        const className = `py-3 px-2 text-sm font-medium border-b-2 transition-colors ${isActive ? 'border-blue-500 text-blue-600 dark:text-blue-400' : 'border-transparent text-gray-500 dark:text-gray-400'}`;
+                        
+                        return (
+                            <Link key={i} href={item.href} className={className}>
+                                {item.name}
+                            </Link>
+                        )
+                    })}
+                </div>
+            </div>
+
             {/* Center Content */}
             <div className="col-span-1 lg:col-span-10 xl:col-span-7">
                 {/* Header */}

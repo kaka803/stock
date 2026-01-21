@@ -96,7 +96,7 @@ export default function CryptoPage() {
       <section className="mx-auto max-w-7xl px-6 lg:px-12 py-12 mb-20">
          <div className="flex flex-col zgap-8">
             {/* Header & Search */}
-            <div className="flex flex-col md:flex-row justify-between items-end md:items-center gap-4">
+            <div className="flex flex-col md:flex-row justify-between items-end md:items-center gap-6 mb-8">
                 <div>
                      <p className="text-sm text-gray-500 dark:text-gray-400 mb-2 uppercase tracking-wide">Market Overview</p>
                      <h2 className="text-4xl font-bold anta-regular">Top Crypto Assets</h2>
@@ -122,58 +122,60 @@ export default function CryptoPage() {
 
             {/* Main Content */}
             <div className="w-full">
-
-                {/* Table Header */}
-                <div className="grid grid-cols-12 text-sm text-gray-500 dark:text-gray-400 mb-6 px-4">
-                    <div className="col-span-6">Name</div>
-                    <div className="col-span-2">Price</div>
-                    <div className="col-span-2">Change (24h)</div>
-                    <div className="col-span-2 text-right">Action</div>
-                </div>
-
-                {/* Crypto List */}
-                <div className="space-y-2">
-                    {loading ? (
-                        <div className="col-span-12 flex justify-center py-12">
-                            <Loader2 className="animate-spin w-8 h-8 text-blue-500" />
+                {/* Responsive Table Container */}
+                <div className="overflow-x-auto pb-4 -mx-4 px-4 custom-scrollbar">
+                    <div className="min-w-[500px]">
+                        {/* Table Header */}
+                        <div className="grid grid-cols-12 text-sm text-gray-500 dark:text-gray-400 mb-6 px-4">
+                            <div className="col-span-6">Name</div>
+                            <div className="col-span-2">Price</div>
+                            <div className="col-span-2">Change (24h)</div>
+                            <div className="col-span-2 text-right">Action</div>
                         </div>
-                    ) : paginatedCryptos.length > 0 ? (
-                        paginatedCryptos.map((crypto, i) => (
-                        <Link href={`/crypto/${crypto.symbol}`} key={i} className="group grid grid-cols-12 items-center p-4 hover:bg-gray-50 dark:hover:bg-zinc-900 rounded-xl transition-colors cursor-pointer">
-                            <div className="col-span-6 flex items-center gap-4">
-                                <div className="w-10 h-10 rounded-full bg-white dark:bg-zinc-800 text-[10px] flex items-center justify-center overflow-hidden shadow-sm border border-gray-100 dark:border-zinc-700">
-                                    {/* Using a placeholder or the image if available. Since API returns empty image often, maybe use a generic icon or initials? 
-                                        For now keeping existing img tag logic. */}
-                                    {crypto.image ? 
-                                        <img src={crypto.image} alt={crypto.name} className="w-full h-full object-cover" /> :
-                                        <div className="font-bold text-xs">{crypto.symbol.substring(0, 2)}</div>
-                                    }
+
+                        {/* Crypto List */}
+                        <div className="space-y-2">
+                            {loading ? (
+                                <div className="col-span-12 flex justify-center py-12">
+                                    <Loader2 className="animate-spin w-8 h-8 text-blue-500" />
                                 </div>
-                                <div>
-                                    <div className="font-semibold text-gray-900 dark:text-white">{crypto.name}</div>
-                                    <div className="text-xs text-gray-500 dark:text-gray-400 font-bold">{crypto.symbol}</div>
+                            ) : paginatedCryptos.length > 0 ? (
+                                paginatedCryptos.map((crypto, i) => (
+                                <Link href={`/crypto/${crypto.symbol}`} key={i} className="group grid grid-cols-12 items-center p-4 hover:bg-gray-50 dark:hover:bg-zinc-900 rounded-xl transition-colors cursor-pointer">
+                                    <div className="col-span-6 flex items-center gap-4">
+                                        <div className="w-10 h-10 rounded-full bg-white dark:bg-zinc-800 text-[10px] flex items-center justify-center overflow-hidden shadow-sm border border-gray-100 dark:border-zinc-700 shrink-0">
+                                            {crypto.image ? 
+                                                <img src={crypto.image} alt={crypto.name} className="w-full h-full object-cover" /> :
+                                                <div className="font-bold text-xs">{crypto.symbol.substring(0, 2)}</div>
+                                            }
+                                        </div>
+                                        <div className="truncate">
+                                            <div className="font-semibold text-gray-900 dark:text-white truncate">{crypto.name}</div>
+                                            <div className="text-xs text-gray-500 dark:text-gray-400 font-bold">{crypto.symbol}</div>
+                                        </div>
+                                    </div>
+                                    <div className="col-span-2 font-medium whitespace-nowrap">
+                                        ${parseFloat(crypto.price).toLocaleString()}
+                                    </div>
+                                    <div className={`col-span-2 text-sm font-medium whitespace-nowrap ${crypto.isNegative ? 'text-red-500' : 'text-green-500'}`}>
+                                        <div className="flex flex-col">
+                                            <span>{crypto.isNegative ? '↓' : '↑'} {crypto.change}%</span>
+                                        </div>
+                                    </div>
+                                    <div className="col-span-2 text-right">
+                                        <button className="text-blue-500 font-semibold hover:underline text-sm md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+                                            Trade
+                                        </button>
+                                    </div>
+                                </Link>
+                            ))
+                            ) : (
+                                <div className="text-center py-10 text-gray-500">
+                                     {searchQuery ? "No coins found matching your search." : "Failed to load data. Rate limit might be exceeded."}
                                 </div>
-                            </div>
-                            <div className="col-span-2 font-medium">
-                                ${parseFloat(crypto.price).toLocaleString()}
-                            </div>
-                            <div className={`col-span-2 text-sm font-medium ${crypto.isNegative ? 'text-red-500' : 'text-green-500'}`}>
-                                <div className="flex flex-col">
-                                    <span>{crypto.isNegative ? '↓' : '↑'} {crypto.change}%</span>
-                                </div>
-                            </div>
-                            <div className="col-span-2 text-right">
-                                <button className="text-blue-500 font-semibold hover:underline text-sm opacity-0 group-hover:opacity-100 transition-opacity">
-                                    Trade
-                                </button>
-                            </div>
-                        </Link>
-                    ))
-                    ) : (
-                        <div className="text-center py-10 text-gray-500">
-                             {searchQuery ? "No coins found matching your search." : "Failed to load data. Rate limit might be exceeded."}
+                            )}
                         </div>
-                    )}
+                    </div>
                 </div>
 
                 {/* Pagination Controls */}

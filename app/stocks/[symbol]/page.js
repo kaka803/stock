@@ -106,10 +106,40 @@ export default function StockDetailPage() {
                     }
                     return (
                         <button key={i} className={className}>
-                            {item} {stock.symbol}
+                            {item}
                         </button>
                     )
                 })}
+            </div>
+
+            {/* Mobile Subpage Navigation (Horizontal Scroll) */}
+            <div className="lg:hidden col-span-1 border-b border-gray-100 dark:border-zinc-800 mb-6 overflow-x-auto custom-scrollbar">
+                <div className="flex whitespace-nowrap px-2 gap-4">
+                    {['About', 'Financials', 'Option chain', 'Market Cap', 'P/E ratio', 'News'].map((item, i) => {
+                        let href = null;
+                        if (item === 'Financials') href = `/stocks/${symbol}/financials`;
+                        if (item === 'Option chain') href = `/stocks/${symbol}/option-chain`;
+                        if (item === 'Market Cap') href = `/stocks/${symbol}/market-cap`;
+                        if (item === 'P/E ratio') href = `/stocks/${symbol}/pe-ratio`;
+                        if (item === 'News') href = `/stocks/${symbol}/news`;
+
+                        const isActive = i === 0;
+                        const className = `py-3 px-2 text-sm font-medium border-b-2 transition-colors ${isActive ? 'border-blue-500 text-blue-600 dark:text-blue-400' : 'border-transparent text-gray-500 dark:text-gray-400'}`;
+                        
+                        if (href) {
+                            return (
+                                <Link key={i} href={href} className={className}>
+                                    {item}
+                                </Link>
+                            )
+                        }
+                        return (
+                            <button key={i} className={className}>
+                                {item}
+                            </button>
+                        )
+                    })}
+                </div>
             </div>
 
             {/* Center Content */}

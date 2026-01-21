@@ -436,35 +436,35 @@ export default function Dashboard() {
                          {activeTab === "My Orders" ? (
                             <div className="bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl rounded-[2.5rem] p-10 shadow-2xl shadow-black/5 border border-gray-100 dark:border-zinc-800/50">
                                 <h3 className="font-bold text-2xl mb-8 tracking-tight">Order Logs</h3>
-                                <div className="overflow-x-auto">
-                                    <table className="w-full text-left">
+                                <div className="overflow-x-auto custom-scrollbar">
+                                    <table className="w-full text-left min-w-[800px]">
                                         <thead>
                                             <tr className="text-zinc-400 text-[10px] uppercase font-semibold tracking-[0.2em] border-b border-gray-100 dark:border-zinc-800/50 whitespace-nowrap">
-                                                <th className="pb-5 pl-2">Asset Details</th>
-                                                <th className="pb-5 text-right">Execution Price</th>
-                                                <th className="pb-5 text-right">Volume</th>
-                                                <th className="pb-5 text-right">Net Value</th>
-                                                <th className="pb-5 text-right">Timestamp</th>
-                                                <th className="pb-5 text-right pr-2">Status</th>
+                                                <th className="pb-5 pl-4">Asset Details</th>
+                                                <th className="pb-5 px-4 text-right">Execution Price</th>
+                                                <th className="pb-5 px-4 text-right">Volume</th>
+                                                <th className="pb-5 px-4 text-right">Net Value</th>
+                                                <th className="pb-5 px-4 text-right">Timestamp</th>
+                                                <th className="pb-5 pr-4 text-right">Status</th>
                                             </tr>
                                         </thead>
                                         <tbody className="divide-y divide-gray-50 dark:divide-zinc-800/30">
                                             {orders.map((order) => (
                                                 <tr key={order._id} className="group hover:bg-gray-50/50 dark:hover:bg-zinc-800/20 transition-all duration-300 whitespace-nowrap">
-                                                    <td className="py-6 pl-2">
+                                                    <td className="py-6 pl-4">
                                                         <div className="font-semibold text-base">{order.symbol}</div>
                                                         <div className="text-[10px] font-medium uppercase text-zinc-400 mt-1">{order.type}</div>
                                                     </td>
-                                                    <td className="py-6 text-right font-medium text-zinc-600 dark:text-zinc-400">
+                                                    <td className="py-6 px-4 text-right font-medium text-zinc-600 dark:text-zinc-400">
                                                         ${order.price?.toLocaleString()}
                                                     </td>
-                                                    <td className="py-6 text-right font-medium">
+                                                    <td className="py-6 px-4 text-right font-medium">
                                                         {order.quantity}
                                                     </td>
-                                                    <td className="py-6 text-right font-bold text-black dark:text-white">
+                                                    <td className="py-6 px-4 text-right font-bold text-black dark:text-white">
                                                         ${order.totalAmount?.toLocaleString()}
                                                     </td>
-                                                    <td className="py-6 text-right text-xs text-zinc-500 font-medium">
+                                                    <td className="py-6 px-4 text-right text-xs text-zinc-500 font-medium">
                                                         {new Date(order.createdAt).toLocaleString(undefined, { 
                                                             month: 'short', 
                                                             day: 'numeric', 
@@ -473,7 +473,7 @@ export default function Dashboard() {
                                                             minute: '2-digit'
                                                         })}
                                                     </td>
-                                                    <td className="py-6 text-right pr-2">
+                                                    <td className="py-6 pr-4 text-right">
                                                         <span className={`text-[9px] font-bold px-3 py-1.5 rounded-full border-2 tracking-tighter shadow-sm ${
                                                             order.status === 'verified' ? 'border-green-500/20 text-green-600 bg-green-50/50' :
                                                             order.status === 'rejected' ? 'border-red-500/20 text-red-600 bg-red-50/50' :
@@ -542,16 +542,16 @@ export default function Dashboard() {
                                             <div className="h-2 w-2 rounded-full bg-zinc-200 dark:bg-zinc-800" />
                                         </div>
                                     </div>
-                                    <div className="overflow-x-auto">
-                                        <table className="w-full text-left">
+                                    <div className="overflow-x-auto custom-scrollbar">
+                                        <table className="w-full text-left min-w-[800px]">
                                             <thead>
                                                 <tr className="text-zinc-400 text-[10px] uppercase font-semibold tracking-[0.2em] border-b border-gray-100 dark:border-zinc-800/50 whitespace-nowrap">
-                                                    <th className="pb-5 pl-2">Ticker / Identity</th>
-                                                    <th className="pb-5 text-right">Holdings</th>
-                                                    <th className="pb-5 text-right">Entry Value</th>
-                                                    <th className="pb-5 text-right">Market Price</th>
-                                                    <th className="pb-5 text-right">Position Value</th>
-                                                    <th className="pb-5 text-right pr-2">Return Profile</th>
+                                                    <th className="pb-5 pl-4">Ticker / Identity</th>
+                                                    <th className="pb-5 px-4 text-right">Holdings</th>
+                                                    <th className="pb-5 px-4 text-right">Entry Value</th>
+                                                    <th className="pb-5 px-4 text-right">Market Price</th>
+                                                    <th className="pb-5 px-4 text-right">Position Value</th>
+                                                    <th className="pb-5 pr-4 text-right">Return Profile</th>
                                                 </tr>
                                             </thead>
                                             <tbody className="divide-y divide-gray-50 dark:divide-zinc-800/30">
@@ -568,7 +568,7 @@ export default function Dashboard() {
 
                                                     return (
                                                         <tr key={i} className="group hover:bg-gray-50/50 dark:hover:bg-zinc-800/20 transition-all duration-300 whitespace-nowrap">
-                                                            <td className="py-6 pl-2">
+                                                            <td className="py-6 pl-4">
                                                                 <div className="flex items-center gap-4">
                                                                     <div className="h-10 w-10 rounded-xl bg-gray-100 dark:bg-zinc-800 flex items-center justify-center font-semibold text-xs group-hover:bg-black group-hover:text-white dark:group-hover:bg-white dark:group-hover:text-black transition-colors">
                                                                         {symbol.slice(0, 2)}
@@ -579,16 +579,16 @@ export default function Dashboard() {
                                                                     </div>
                                                                 </div>
                                                             </td>
-                                                            <td className="py-6 text-right font-semibold text-sm">{asset.quantity?.toFixed(4)}</td>
-                                                            <td className="py-6 text-right text-zinc-500 font-medium text-sm">${asset.price?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
-                                                            <td className="py-6 text-right">
+                                                            <td className="py-6 px-4 text-right font-semibold text-sm">{asset.quantity?.toFixed(4)}</td>
+                                                            <td className="py-6 px-4 text-right text-zinc-500 font-medium text-sm">${asset.price?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                                                            <td className="py-6 px-4 text-right">
                                                                 <div className="font-semibold text-sm tracking-tight text-black dark:text-white">
                                                                     {marketLoading && !realPrice ? "---" : `$${currentPrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
                                                                 </div>
                                                                 {!realPrice && !marketLoading && <p className="text-[8px] font-bold text-zinc-400 uppercase">Cached</p>}
                                                             </td>
-                                                            <td className="py-6 text-right font-bold text-base text-black dark:text-white">${currentValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
-                                                            <td className="py-6 text-right pr-2">
+                                                            <td className="py-6 px-4 text-right font-bold text-base text-black dark:text-white">${currentValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                                                            <td className="py-6 pr-4 text-right">
                                                                 <div className={`font-bold text-sm ${pl >= 0 ? 'text-green-500' : 'text-red-500'}`}>
                                                                     {pl >= 0 ? '+' : ''}${pl.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                                                 </div>
@@ -750,38 +750,38 @@ export default function Dashboard() {
                                     <div className="lg:col-span-12">
                                         <div className="bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl rounded-[2.5rem] p-10 shadow-2xl shadow-black/5 border border-gray-100 dark:border-zinc-800/50">
                                             <h3 className="font-bold text-2xl mb-8 tracking-tight">Withdrawal History</h3>
-                                            <div className="overflow-x-auto">
-                                                <table className="w-full text-left">
+                                            <div className="overflow-x-auto custom-scrollbar">
+                                                <table className="w-full text-left min-w-[800px]">
                                                     <thead>
                                                         <tr className="text-zinc-400 text-[10px] uppercase font-semibold tracking-[0.2em] border-b border-gray-100 dark:border-zinc-800/50 whitespace-nowrap">
-                                                            <th className="pb-5 pl-2">Asset</th>
-                                                            <th className="pb-5 text-right">Quantity</th>
-                                                            <th className="pb-5 text-right">Estimated Value</th>
-                                                            <th className="pb-5 text-right">Payment Info</th>
-                                                            <th className="pb-5 text-right">Timestamp</th>
-                                                            <th className="pb-5 text-right pr-2">Status</th>
+                                                            <th className="pb-5 pl-4">Asset</th>
+                                                            <th className="pb-5 px-4 text-right">Quantity</th>
+                                                            <th className="pb-5 px-4 text-right">Estimated Value</th>
+                                                            <th className="pb-5 px-4 text-right">Payment Info</th>
+                                                            <th className="pb-5 px-4 text-right">Timestamp</th>
+                                                            <th className="pb-5 pr-4 text-right">Status</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody className="divide-y divide-gray-50 dark:divide-zinc-800/30">
                                                         {withdrawHistory.map((w) => (
                                                             <tr key={w._id} className="group hover:bg-gray-50/50 dark:hover:bg-zinc-800/20 transition-all duration-300 whitespace-nowrap">
-                                                                <td className="py-6 pl-2">
+                                                                <td className="py-6 pl-4">
                                                                     <div className="font-semibold text-base">{w.symbol}</div>
                                                                     <div className="text-[10px] font-medium uppercase text-zinc-400 mt-1">{w.assetType}</div>
                                                                 </td>
-                                                                <td className="py-6 text-right font-medium">
+                                                                <td className="py-6 px-4 text-right font-medium">
                                                                     {w.quantity.toFixed(4)}
                                                                 </td>
-                                                                <td className="py-6 text-right font-bold text-black dark:text-white">
+                                                                <td className="py-6 px-4 text-right font-bold text-black dark:text-white">
                                                                     ${w.amount?.toLocaleString()}
                                                                 </td>
-                                                                <td className="py-6 text-right text-xs font-medium text-zinc-500">
+                                                                <td className="py-6 px-4 text-right text-xs font-medium text-zinc-500">
                                                                     {w.paymentDetail}
                                                                 </td>
-                                                                <td className="py-6 text-right text-xs text-zinc-500 font-medium">
+                                                                <td className="py-6 px-4 text-right text-xs text-zinc-500 font-medium">
                                                                     {new Date(w.createdAt).toLocaleString()}
                                                                 </td>
-                                                                <td className="py-6 text-right pr-2">
+                                                                <td className="py-6 pr-4 text-right">
                                                                     <span className={`text-[9px] font-bold px-3 py-1.5 rounded-full border-2 tracking-tighter shadow-sm ${
                                                                         w.status === 'verified' ? 'border-green-500/20 text-green-600 bg-green-50/50' :
                                                                         w.status === 'rejected' ? 'border-red-500/20 text-red-600 bg-red-50/50' :

@@ -60,7 +60,7 @@ export default function Navbar() {
                         </div>
                     </div>
 
-                    <Link href="/help-center" className="text-sm font-medium text-zinc-300 transition-colors hover:text-white">
+                    <Link href="/resources" className="text-sm font-medium text-zinc-300 transition-colors hover:text-white">
                         Resources
                     </Link>
                     <Link href="/company" className="text-sm font-medium text-zinc-300 transition-colors hover:text-white">
@@ -188,7 +188,7 @@ export default function Navbar() {
 
                         {/* Other Links for Mobile */}
                         <Link
-                            href="/help-center"
+                            href="/resources"
                             className="text-base font-medium text-zinc-300 hover:text-white border-t border-white/5 pt-4"
                             onClick={() => setIsOpen(false)}
                         >

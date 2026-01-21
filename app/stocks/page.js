@@ -99,70 +99,75 @@ export default function StocksPage() {
          <div className="flex gap-12">
             {/* Main Content */}
             <div className="flex-1">
-                <div className="flex items-end justify-between mb-12">
+                <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
                     <div>
                         <p className="text-sm text-gray-500 dark:text-gray-400 mb-2 uppercase tracking-wide">Market Overview</p>
                         <h2 className="text-4xl font-bold anta-regular">Most Active Stocks</h2>
                     </div>
                     
                     {/* Search Bar */}
-                    <div className="relative">
+                    <div className="relative w-full md:w-64">
                         <input 
                             type="text" 
                             placeholder="Search stocks..." 
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="pl-10 pr-4 py-2 border border-gray-200 dark:border-zinc-800 rounded-full bg-gray-50 dark:bg-zinc-900 focus:outline-none focus:ring-2 focus:ring-blue-500 w-64 transition-all"
+                            className="pl-10 pr-4 py-2 border border-gray-200 dark:border-zinc-800 rounded-full bg-gray-50 dark:bg-zinc-900 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full transition-all"
                         />
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                     </div>
                 </div>
 
-                {/* Table Header */}
-                <div className="grid grid-cols-12 text-sm text-gray-500 dark:text-gray-400 mb-6 px-4">
-                    <div className="col-span-6">Name</div>
-                    <div className="col-span-2">Price</div>
-                    <div className="col-span-2">Change</div>
-                    <div className="col-span-2"></div>
-                </div>
-
-                {/* Stock List */}
-                <div className="space-y-2">
-                    {loading ? (
-                        <div className="col-span-12 flex justify-center py-12">
-                            <Loader2 className="animate-spin w-8 h-8 text-blue-500" />
+                {/* Responsive Table Container */}
+                <div className="overflow-x-auto pb-4 -mx-4 px-4 custom-scrollbar">
+                    <div className="min-w-[500px]">
+                        {/* Table Header */}
+                        <div className="grid grid-cols-12 text-sm text-gray-500 dark:text-gray-400 mb-6 px-4">
+                            <div className="col-span-6">Name</div>
+                            <div className="col-span-2">Price</div>
+                            <div className="col-span-2">Change</div>
+                            <div className="col-span-2"></div>
                         </div>
-                    ) : displayedStocks.length > 0 ? (
-                        displayedStocks.map((stock, i) => (
-                        <Link href={`/stocks/${stock.symbol}`} key={i} className="group grid grid-cols-12 items-center p-4 hover:bg-gray-50 dark:hover:bg-zinc-900 rounded-xl transition-colors cursor-pointer">
-                            <div className="col-span-6 flex items-center gap-4">
-                                <div className="w-10 h-10 rounded-full bg-blue-900 text-[10px] text-white flex items-center justify-center font-bold">
-                                    {stock.symbol.substring(0, 4)}
+
+                        {/* Stock List */}
+                        <div className="space-y-2">
+                            {loading ? (
+                                <div className="col-span-12 flex justify-center py-12">
+                                    <Loader2 className="animate-spin w-8 h-8 text-blue-500" />
                                 </div>
-                                <div>
-                                    <div className="font-semibold text-gray-900 dark:text-white">{stock.name}</div>
-                                    <div className="text-xs text-gray-500 dark:text-gray-400 font-bold">{stock.symbol}</div>
-                                </div>
-                            </div>
-                            <div className="col-span-2 font-medium">
-                                ${stock.price}
-                            </div>
-                            <div className={`col-span-2 text-sm font-medium ${stock.isNegative ? 'text-red-500' : 'text-green-500'}`}>
-                                <div className="flex flex-col">
-                                    <span>{stock.isNegative ? '↓' : '↑'} {stock.change}</span>
-                                    <span className="text-xs text-gray-400 dark:text-gray-500">{stock.changeValue}</span>
-                                </div>
-                            </div>
-                            <div className="col-span-2 text-right">
-                                <span className="text-blue-500 font-semibold hover:underline text-sm opacity-0 group-hover:opacity-100 transition-opacity">
-                                    Invest
-                                </span>
-                            </div>
-                        </Link>
-                    ))
-                    ) : (
-                        <div className="text-center py-10 text-gray-500">No stocks found matching "{searchQuery}".</div>
-                    )}
+                            ) : displayedStocks.length > 0 ? (
+                                displayedStocks.map((stock, i) => (
+                                <Link href={`/stocks/${stock.symbol}`} key={i} className="group grid grid-cols-12 items-center p-4 hover:bg-gray-50 dark:hover:bg-zinc-900 rounded-xl transition-colors cursor-pointer">
+                                    <div className="col-span-6 flex items-center gap-4">
+                                        <div className="w-10 h-10 rounded-full bg-blue-900 text-[10px] text-white flex items-center justify-center font-bold shrink-0">
+                                            {stock.symbol.substring(0, 4)}
+                                        </div>
+                                        <div className="truncate">
+                                            <div className="font-semibold text-gray-900 dark:text-white truncate">{stock.name}</div>
+                                            <div className="text-xs text-gray-500 dark:text-gray-400 font-bold">{stock.symbol}</div>
+                                        </div>
+                                    </div>
+                                    <div className="col-span-2 font-medium whitespace-nowrap">
+                                        ${stock.price}
+                                    </div>
+                                    <div className={`col-span-2 text-sm font-medium whitespace-nowrap ${stock.isNegative ? 'text-red-500' : 'text-green-500'}`}>
+                                        <div className="flex flex-col">
+                                            <span>{stock.isNegative ? '↓' : '↑'} {stock.change}</span>
+                                            <span className="text-xs text-gray-400 dark:text-gray-500">{stock.changeValue}</span>
+                                        </div>
+                                    </div>
+                                    <div className="col-span-2 text-right">
+                                        <span className="text-blue-500 font-semibold hover:underline text-sm md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+                                            Invest
+                                        </span>
+                                    </div>
+                                </Link>
+                            ))
+                            ) : (
+                                <div className="text-center py-10 text-gray-500">No stocks found matching "{searchQuery}".</div>
+                            )}
+                        </div>
+                    </div>
                 </div>
 
                 {/* Pagination Controls */}

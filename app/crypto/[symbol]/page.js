@@ -106,6 +106,25 @@ export default function CryptoDetailPage() {
                 })}
             </div>
 
+            {/* Mobile Subpage Navigation (Horizontal Scroll) */}
+            <div className="lg:hidden col-span-1 border-b border-gray-100 dark:border-zinc-800 mb-6 overflow-x-auto custom-scrollbar">
+                <div className="flex whitespace-nowrap px-2 gap-4">
+                    {['Overview', 'Financials', 'Market Cap', 'News', 'Option chain', 'PE ratio'].map((item, i) => {
+                        let href = `/crypto/${symbol}`;
+                        if (item !== 'Overview') href += `/${item.toLowerCase().replace(' ', '-')}`;
+                        
+                        const isActive = i === 0;
+                        const className = `py-3 px-2 text-sm font-medium border-b-2 transition-colors ${isActive ? 'border-blue-500 text-blue-600 dark:text-blue-400' : 'border-transparent text-gray-500 dark:text-gray-400'}`;
+                        
+                        return (
+                            <Link key={i} href={href} className={className}>
+                                {item}
+                            </Link>
+                        )
+                    })}
+                </div>
+            </div>
+
             {/* Main Content */}
             <div className="col-span-1 lg:col-span-10 xl:col-span-7">
                 <div className="flex items-center gap-4 mb-6">
