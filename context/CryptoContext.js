@@ -10,7 +10,7 @@ export function CryptoProvider({ children }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
 
-  const loadCryptos = async () => {
+  const loadCryptos = React.useCallback(async () => {
     // Basic caching/check if already loaded
     if (cryptos.length > 0) return;
 
@@ -20,7 +20,7 @@ export function CryptoProvider({ children }) {
       setCryptos(data);
     }
     setLoading(false);
-  };
+  }, [cryptos.length]);
 
   const value = useMemo(() => ({
     cryptos,
@@ -31,7 +31,7 @@ export function CryptoProvider({ children }) {
     setCurrentPage,
     loadCryptos,
     getCryptoBySymbol: (symbol) => cryptos.find(c => c.symbol === symbol)
-  }), [cryptos, loading, searchQuery, currentPage]);
+  }), [cryptos, loading, searchQuery, currentPage, loadCryptos]);
 
   return (
     <CryptoContext.Provider value={value}>

@@ -10,7 +10,7 @@ export function ForexProvider({ children }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
 
-  const loadForex = async () => {
+  const loadForex = React.useCallback(async () => {
     if (forex.length > 0) return;
 
     setLoading(true);
@@ -19,7 +19,7 @@ export function ForexProvider({ children }) {
       setForex(data);
     }
     setLoading(false);
-  };
+  }, [forex.length]);
 
   const value = useMemo(() => ({
     forex,
@@ -30,7 +30,7 @@ export function ForexProvider({ children }) {
     setCurrentPage,
     loadForex,
     getForexBySymbol: (symbol) => forex.find(f => f.symbol === symbol)
-  }), [forex, loading, searchQuery, currentPage]);
+  }), [forex, loading, searchQuery, currentPage, loadForex]);
 
   return (
     <ForexContext.Provider value={value}>

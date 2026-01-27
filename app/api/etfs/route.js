@@ -81,7 +81,7 @@ export async function GET(req) {
     }
 
     const chunks = [];
-    const chunkSize = 50;
+    const chunkSize = 150;
     for (let i = 0; i < symbolsToFetch.length; i += chunkSize) {
       chunks.push(symbolsToFetch.slice(i, i + chunkSize));
     }

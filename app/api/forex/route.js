@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 
 const API_KEY = process.env.NEXT_PUBLIC_FCS_API_KEY;
-const BASE_URL = 'https://fcsapi.com/api-v3/forex/history';
+const BASE_URL = 'https://fcsapi.com/api-v3/forex/latest';
 
 const POPULAR_PAIRS = [
   // Majors
@@ -77,10 +77,10 @@ export async function GET(req) {
         return response.json();
     };
 
-    // Split symbols into batches of 50
+    // Split symbols into batches of 150
     const batches = [];
-    for (let i = 0; i < symbolsToFetch.length; i += 50) {
-        batches.push(symbolsToFetch.slice(i, i + 50));
+    for (let i = 0; i < symbolsToFetch.length; i += 150) {
+        batches.push(symbolsToFetch.slice(i, i + 150));
     }
 
     const allResponses = await Promise.all(batches.map(batch => fetchBatch(batch)));

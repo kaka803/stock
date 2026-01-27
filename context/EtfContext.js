@@ -10,7 +10,7 @@ export function EtfProvider({ children }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
 
-  const loadEtfs = async () => {
+  const loadEtfs = React.useCallback(async () => {
     if (etfs.length > 0) return; 
 
     setLoading(true);
@@ -19,7 +19,7 @@ export function EtfProvider({ children }) {
       setEtfs(data);
     }
     setLoading(false);
-  };
+  }, [etfs.length]);
 
   const value = useMemo(() => ({
     etfs,
@@ -30,7 +30,7 @@ export function EtfProvider({ children }) {
     setCurrentPage,
     loadEtfs,
     getEtfBySymbol: (symbol) => etfs.find(e => e.symbol === symbol)
-  }), [etfs, loading, searchQuery, currentPage]);
+  }), [etfs, loading, searchQuery, currentPage, loadEtfs]);
 
   return (
     <EtfContext.Provider value={value}>
