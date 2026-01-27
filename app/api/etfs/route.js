@@ -64,10 +64,25 @@ const ETF_METADATA = {
     "XLF": "Financial Select Sector SPDR Fund"
 };
 
+// Simple In-Memory Cache for Server Instance
+const cache = new Map();
+const CACHE_DURATION = 60 * 1000; // 1 minute
+
 export async function GET(req) {
   try {
     const { searchParams } = new URL(req.url);
-    const requestedSymbols = searchParams.get('symbol')?.split(',').map(s => s.trim().toUpperCase()) || [];
+    const symbolParam = searchParams.get('symbol');
+    const requestedSymbols = symbolParam?.split(',').map(s => s.trim().toUpperCase()) || [];
+
+    // Use sorted symbols as cache key
+    const cacheKey = requestedSymbols.length > 0 
+        ? [...new Set(requestedSymbols)].sort().join(',') 
+        : 'POPULAR_ETFS';
+    
+    const cachedData = cache.get(cacheKey);
+    if (cachedData && (Date.now() - cachedData.timestamp < CACHE_DURATION)) {
+      return NextResponse.json(cachedData.data);
+    }
 
     let symbolsToFetch;
     if (requestedSymbols.length > 0) {
@@ -80,10 +95,13 @@ export async function GET(req) {
       return NextResponse.json({ status: false, msg: "API Key is missing" }, { status: 500 });
     }
 
+    // Limit to first 100 unique symbols to stay within 1 credit limit
+    const symbolsToFetchLimited = [...new Set(symbolsToFetch)].slice(0, 100);
+
     const chunks = [];
-    const chunkSize = 150;
-    for (let i = 0; i < symbolsToFetch.length; i += chunkSize) {
-      chunks.push(symbolsToFetch.slice(i, i + chunkSize));
+    const chunkSize = 100;
+    for (let i = 0; i < symbolsToFetchLimited.length; i += chunkSize) {
+      chunks.push(symbolsToFetchLimited.slice(i, i + chunkSize));
     }
 
     const allEtfs = [];
@@ -109,6 +127,12 @@ export async function GET(req) {
       isNegative: parseFloat(item.ch) < 0,
       isEtf: true
     }));
+
+    // Store in Cache
+    cache.set(cacheKey, {
+        data: mappedEtfs,
+        timestamp: Date.now()
+    });
 
     return NextResponse.json(mappedEtfs);
 

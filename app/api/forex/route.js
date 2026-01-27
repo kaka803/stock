@@ -11,7 +11,6 @@ const POPULAR_PAIRS = [
   "EUR/GBP", "EUR/JPY", "GBP/JPY", "EUR/CHF", "GBP/CHF", "AUD/JPY", "EUR/AUD",
   "NZD/JPY", "GBP/CAD", "EUR/CAD", "AUD/CAD", "GBP/AUD", "AUD/NZD", "NZD/CAD",
   "GBP/NZD", "EUR/NZD", "CAD/JPY", "CHF/JPY", "AUD/CHF", "CAD/CHF", "NZD/CHF",
-  "EUR/AUD", "EUR/CAD", "EUR/NZD", "GBP/AUD", "GBP/CAD", "GBP/NZD",
 
   // Euro Crosses
   "EUR/DKK", "EUR/HKD", "EUR/NOK", "EUR/PLN", "EUR/SEK", "EUR/SGD", "EUR/TRY", 
@@ -28,26 +27,9 @@ const POPULAR_PAIRS = [
   "USD/MYR", "USD/SAR", "USD/AED", "USD/KWD", "USD/QAR", "USD/OMr", "USD/BHD",
   "USD/EGP", "USD/NGN", "USD/KES", "USD/GHS", "USD/MAD",
 
-  // Additional AUD/NZD/CAD/CHF Crosses
+  // Additional 
   "AUD/SGD", "AUD/HKD", "AUD/PLN", "AUD/NOK", "AUD/SEK", "AUD/DKK", 
-  "NZD/SGD", "NZD/HKD", "CAD/SGD", "CAD/HKD", "CHF/SGD", "CHF/HKD",
-  "CHF/SEK", "CHF/NOK", "CHF/DKK", "CHF/PLN",
-
-  // Metals & Crypto (Often traded on Forex platforms)
-  "XAU/USD", "XAG/USD", "XPT/USD", "XPD/USD", "BTC/USD", "ETH/USD", "SOL/USD", "BNB/USD",
-  "XRP/USD", "ADA/USD", "DOT/USD", "LTC/USD", "AVA/USD", "UNI/USD", "LINK/USD",
-
-  // More Exotics & Others
-  "TRY/JPY", "MXN/JPY", "ZAR/JPY", "SGD/JPY", "HKD/JPY", "NOK/JPY", "SEK/JPY",
-  "DKK/JPY", "PLN/JPY", "HUF/JPY", "CZK/JPY", "ILS/JPY", "RUB/JPY",
-  "BRL/JPY", "INR/JPY", "THB/JPY", "IDR/JPY", "SAR/JPY", "AED/JPY",
-  "SGD/HKD", "SGD/ZAR", "SGD/TRY", "SGD/MXN", "SGD/NOK", "SGD/SEK",
-  "HKD/SGD", "HKD/ZAR", "HKD/TRY", "HKD/MXN", "HKD/NOK", "HKD/SEK",
-  "ZAR/SGD", "ZAR/HKD", "ZAR/TRY", "ZAR/MXN", "ZAR/NOK", "ZAR/SEK",
-  "TRY/SGD", "TRY/HKD", "TRY/ZAR", "TRY/MXN", "TRY/NOK", "TRY/SEK",
-  "MXN/SGD", "MXN/HKD", "MXN/ZAR", "MXN/TRY", "MXN/NOK", "MXN/SEK",
-  "NOK/SGD", "NOK/HKD", "NOK/ZAR", "NOK/TRY", "NOK/MXN", "NOK/SEK",
-  "SEK/SGD", "SEK/HKD", "SEK/ZAR", "SEK/TRY", "SEK/MXN", "SEK/NOK"
+  "NZD/SGD", "NZD/HKD", "CAD/SGD", "CAD/HKD", "CHF/SGD"
 ];
 
 // Simple In-Memory Cache for Server Instance
@@ -59,8 +41,8 @@ export async function GET(req) {
     const { searchParams } = new URL(req.url);
     const requestedSymbols = searchParams.get('symbol')?.split(',').map(s => s.trim().toUpperCase()) || [];
 
-    // Limit to first 150 unique symbols to avoid excessive URL length or API limits
-    let symbolsToFetch = [...new Set(requestedSymbols.length > 0 ? requestedSymbols : POPULAR_PAIRS)].slice(0, 150);
+    // Limit to first 100 unique symbols to stay within 1 credit limit
+    let symbolsToFetch = [...new Set(requestedSymbols.length > 0 ? requestedSymbols : POPULAR_PAIRS)].slice(0, 100);
     
     // Check Cache for the exact symbol string requested
     const cacheKey = symbolsToFetch.sort().join(',');
@@ -100,10 +82,10 @@ export async function GET(req) {
         }
     };
 
-    // Split symbols into batches of 150
+    // Split symbols into batches of 100
     const batches = [];
-    for (let i = 0; i < symbolsToFetch.length; i += 150) {
-        batches.push(symbolsToFetch.slice(i, i + 150));
+    for (let i = 0; i < symbolsToFetch.length; i += 100) {
+        batches.push(symbolsToFetch.slice(i, i + 100));
     }
 
     const allResponses = await Promise.all(batches.map(batch => fetchBatch(batch)));

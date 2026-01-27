@@ -6,26 +6,32 @@ const API_KEY = process.env.NEXT_PUBLIC_FCS_API_KEY;
 const BASE_URL = 'https://fcsapi.com/api-v3/stock/latest';
 
 const POPULAR_SYMBOLS = [
-  "AAPL", "MSFT", "GOOGL", "AMZN", "NVDA", "TSLA", "META", "BRK.B", "MNST", "LLY",
-  "V", "UNH", "JNJ", "WMT", "JPM", "XOM", "MA", "PG", "AVGO", "HD",
-  "CVX", "MRK", "ABBV", "PEP", "KO", "COST", "ADBE", "CSCO", "MCD", "TMO",
-  "CRM", "PFE", "ACN", "NFLX", "DHR", "LIN", "ABT", "NKE", "ORCL", "AMD",
-  "DIS", "TXN", "WFC", "UPS", "PM", "BMY", "NEE", "QCOM", "RTX", "HON",
-  "UNP", "AMGN", "IBM", "LOW", "SPGI", "INTC", "CAT", "BA", "GS", "GE",
-  "DE", "BLK", "PLD", "MDT", "LMT", "BKNG", "AMT", "SCHW", "GILD", "SYK",
-  "T", "ADI", "TJX", "ADP", "C", "MDLZ", "ELV", "ISRG", "AXP", "MMC",
-  "NOW", "ZTS", "VRTX", "REGN", "PGR", "LRCX", "CI", "BSX", "MO", "SLB",
-  "BDX", "EOG", "FI", "MU", "NOC", "SO", "DUK", "WM", "ITW", "CSX",
-  "CL", "AON", "MELI", "PANW", "SNOW", "UBER", "ABNB", "PLTR", "SQ", "COIN"
+  "AAPL", "MSFT", "GOOGL", "AMZN", "NVDA", "TSLA", "META", "LLY", "V", "UNH",
+  "JNJ", "WMT", "JPM", "XOM", "MA", "PG", "AVGO", "HD", "CVX", "MRK",
+  "ABBV", "PEP", "KO", "COST", "ADBE", "CSCO", "MCD", "TMO", "CRM", "PFE"
 ];
+
+// Simple In-Memory Cache for Server Instance
+const cache = new Map();
+const CACHE_DURATION = 60 * 1000; // 1 minute
 
 export async function GET(req) {
   try {
-    await connectDB();
-    
-    // Get symbols from query params
     const { searchParams } = new URL(req.url);
-    const requestedSymbols = searchParams.get('symbol')?.split(',').map(s => s.trim().toUpperCase()) || [];
+    const symbolParam = searchParams.get('symbol');
+    const requestedSymbols = symbolParam?.split(',').map(s => s.trim().toUpperCase()) || [];
+
+    // Use sorted symbols as cache key
+    const cacheKey = requestedSymbols.length > 0 
+        ? [...new Set(requestedSymbols)].sort().join(',') 
+        : 'POPULAR_SYMBOLS';
+    
+    const cachedData = cache.get(cacheKey);
+    if (cachedData && (Date.now() - cachedData.timestamp < CACHE_DURATION)) {
+      return NextResponse.json(cachedData.data);
+    }
+
+    await connectDB();
 
     // 1. Fetch custom stocks from Database
     let customStocks;
@@ -63,10 +69,13 @@ export async function GET(req) {
       return NextResponse.json(mappedCustom);
     }
 
+    // Limit to first 100 unique symbols (though now we only use 10 by default)
+    const symbolsToFetchLimited = [...new Set(symbolsToFetch)].slice(0, 100);
+
     const chunks = [];
-    const chunkSize = 150;
-    for (let i = 0; i < symbolsToFetch.length; i += chunkSize) {
-      chunks.push(symbolsToFetch.slice(i, i + chunkSize));
+    const chunkSize = 50; // Increased to 50 to send all 30 symbols in 1 request
+    for (let i = 0; i < symbolsToFetchLimited.length; i += chunkSize) {
+      chunks.push(symbolsToFetchLimited.slice(i, i + chunkSize));
     }
 
     const allStocks = [];
@@ -77,8 +86,6 @@ export async function GET(req) {
       
       const response = await fetch(url);
       const data = await response.json();
-      
-      
 
       if (data.status === true && Array.isArray(data.response)) {
         allStocks.push(...data.response);
@@ -96,7 +103,15 @@ export async function GET(req) {
       isCustom: false
     }));
 
-    return NextResponse.json([...mappedCustom, ...mappedExternal]);
+    const finalResult = [...mappedCustom, ...mappedExternal];
+
+    // Store in Cache
+    cache.set(cacheKey, {
+        data: finalResult,
+        timestamp: Date.now()
+    });
+
+    return NextResponse.json(finalResult);
 
   } catch (error) {
     console.error("Stocks API Error:", error);
