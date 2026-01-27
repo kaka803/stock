@@ -40,6 +40,7 @@ body {
     background 0.3s ease-in-out,
     color 0.3s ease-in-out;
   min-height: 100vh;
+  overflow-x: hidden;
 }
 
 .dark body {

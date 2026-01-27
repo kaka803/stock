@@ -7,7 +7,7 @@ const OrderSchema = new mongoose.Schema({
     required: true,
   },
   type: {
-    type: String, // 'stock' or 'crypto'
+    type: String, // 'stock', 'crypto', 'forex', or 'etf'
     required: [true, 'Please provide order type'],
   },
   symbol: {

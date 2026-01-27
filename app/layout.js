@@ -5,6 +5,7 @@ import { StockProvider } from "@/context/StockContext";
 import { CryptoProvider } from "@/context/CryptoContext";
 import { AuthProvider } from "@/context/AuthContext";
 import { ForexProvider } from "@/context/ForexContext";
+import { EtfProvider } from "@/context/EtfContext";
 
 
 const inter = Inter({
@@ -47,14 +48,16 @@ export default function RootLayout({ children }) {
           disableTransitionOnChange
         >
           <AuthProvider>
-            <StockProvider>
-              <CryptoProvider>
-                <ForexProvider>
-                  {children}
-                  <StreamChat />
-                </ForexProvider>
-              </CryptoProvider>
-            </StockProvider>
+            <EtfProvider>
+              <StockProvider>
+                <CryptoProvider>
+                  <ForexProvider>
+                    {children}
+                    <StreamChat />
+                  </ForexProvider>
+                </CryptoProvider>
+              </StockProvider>
+            </EtfProvider>
           </AuthProvider>
         </ThemeProvider>
       </body>

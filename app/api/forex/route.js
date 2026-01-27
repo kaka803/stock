@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 
 const API_KEY = process.env.NEXT_PUBLIC_FCS_API_KEY;
-const BASE_URL = 'https://fcsapi.com/api-v3/forex/latest';
+const BASE_URL = 'https://fcsapi.com/api-v3/forex/history';
 
 const POPULAR_PAIRS = [
   // Majors
@@ -72,7 +72,7 @@ export async function GET(req) {
         });
         const url = `${BASE_URL}?${params.toString()}`;
         
-        console.log("Forex API Fetching Batch:", symbolsString.substring(0, 50) + "...");
+        
         const response = await fetch(url);
         return response.json();
     };

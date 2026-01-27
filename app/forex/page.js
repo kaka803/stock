@@ -41,7 +41,7 @@ export default function ForexPage() {
   }, [searchQuery, setCurrentPage]);
 
   return (
-    <main className="min-h-screen bg-white dark:bg-black text-black dark:text-white selection:bg-blue-500/30 font-sans transition-colors duration-300">
+    <main className="min-h-screen w-full overflow-x-hidden bg-white dark:bg-black text-black dark:text-white selection:bg-blue-500/30 font-sans transition-colors duration-300">
       <Navbar />
       
       {/* Spacer for fixed navbar */}
@@ -95,7 +95,7 @@ export default function ForexPage() {
 
       {/* Index Section */}
       <section className="mx-auto max-w-7xl px-6 lg:px-12 py-12 mb-20">
-         <div className="flex gap-12">
+         <div className="flex flex-col gap-8">
             {/* Main Content */}
             <div className="flex-1">
                 <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
@@ -118,7 +118,7 @@ export default function ForexPage() {
                 </div>
 
                 {/* Responsive Table Container */}
-                <div className="overflow-x-auto pb-4 -mx-4 px-4 custom-scrollbar">
+                <div className="w-full overflow-x-auto pb-4 custom-scrollbar">
                     <div className="min-w-[500px]">
                         {/* Table Header */}
                         <div className="grid grid-cols-12 text-sm text-gray-500 dark:text-gray-400 mb-6 px-4">

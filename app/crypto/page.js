@@ -41,7 +41,7 @@ export default function CryptoPage() {
   };
 
   return (
-    <main className="min-h-screen bg-white dark:bg-black text-black dark:text-white selection:bg-blue-500/30 font-sans transition-colors duration-300">
+    <main className="min-h-screen w-full overflow-x-hidden bg-white dark:bg-black text-black dark:text-white selection:bg-blue-500/30 font-sans transition-colors duration-300">
       <Navbar />
       
       {/* Spacer for fixed navbar */}
@@ -94,9 +94,9 @@ export default function CryptoPage() {
 
       {/* Index Section */}
       <section className="mx-auto max-w-7xl px-6 lg:px-12 py-12 mb-20">
-         <div className="flex flex-col zgap-8">
+         <div className="flex flex-col gap-8">
             {/* Header & Search */}
-            <div className="flex flex-col md:flex-row justify-between items-end md:items-center gap-6 mb-8">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8">
                 <div>
                      <p className="text-sm text-gray-500 dark:text-gray-400 mb-2 uppercase tracking-wide">Market Overview</p>
                      <h2 className="text-4xl font-bold anta-regular">Top Crypto Assets</h2>
@@ -123,7 +123,7 @@ export default function CryptoPage() {
             {/* Main Content */}
             <div className="w-full">
                 {/* Responsive Table Container */}
-                <div className="overflow-x-auto pb-4 -mx-4 px-4 custom-scrollbar">
+                <div className="w-full overflow-x-auto pb-4 custom-scrollbar">
                     <div className="min-w-[500px]">
                         {/* Table Header */}
                         <div className="grid grid-cols-12 text-sm text-gray-500 dark:text-gray-400 mb-6 px-4">

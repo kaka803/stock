@@ -43,6 +43,7 @@ export default function Navbar() {
                                 <div className="flex flex-col">
                                     {[
                                         { name: "Stocks", desc: "Buy and sell shares of companies", href: "/stocks" },
+                                        { name: "ETFs", desc: "Diversify with Exchange Traded Funds", href: "/etfs" },
                                         { name: "Crypto", desc: "Trade digital currencies", href: "/crypto" },
                                         { name: "Forex", desc: "Trade currency pairs", href: "/forex" },
                                     ].map((item) => (
@@ -60,9 +61,36 @@ export default function Navbar() {
                         </div>
                     </div>
 
-                    <Link href="/resources" className="text-sm font-medium text-zinc-300 transition-colors hover:text-white">
-                        Resources
-                    </Link>
+                    {/* Tools & Resources Dropdown */}
+                    <div className="group relative">
+                        <button className="flex items-center gap-1 text-sm font-medium text-zinc-300 transition-colors group-hover:text-white">
+                            Tools & Resources
+                            <ChevronDown className="h-4 w-4 transition-transform group-hover:rotate-180" />
+                        </button>
+                        
+                        <div className="invisible absolute top-full -left-4 pt-4 opacity-0 transition-all duration-200 group-hover:visible group-hover:opacity-100">
+                            <div className="w-80 rounded-xl bg-zinc-900 p-2 shadow-xl ring-1 ring-white/10">
+                                <div className="flex flex-col">
+                                    {[
+                                        { name: "Loyalty Program", desc: "Earn points and redeem rewards", href: "/resources" },
+                                        { name: "Profit Calculator", desc: "Calculate your potential returns", href: "/tools/profit-calculator" },
+                                        { name: "Market News", desc: "Latest financial updates", href: "/tools/market-news" },
+                                        { name: "Glossary", desc: "Learn trading terms", href: "/tools/glossary" },
+                                    ].map((item) => (
+                                        <Link
+                                            key={item.name}
+                                            href={item.href}
+                                            className="flex flex-col gap-0.5 rounded-lg p-3 transition-colors hover:bg-white/10"
+                                        >
+                                            <span className="text-sm font-semibold text-white">{item.name}</span>
+                                            <span className="text-xs text-zinc-400">{item.desc}</span>
+                                        </Link>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <Link href="/company" className="text-sm font-medium text-zinc-300 transition-colors hover:text-white">
                         Company
                     </Link>
@@ -145,150 +173,178 @@ export default function Navbar() {
                 </button>
             </div>
 
-            {/* Mobile Menu */}
-            {isOpen && (
-                <div className="border-t border-white/10 bg-black md:hidden">
-                    <div className="flex flex-col space-y-4 p-6">
+            {/* Mobile Menu Overlay */}
+            <div 
+                className={`fixed inset-0 top-20 z-40 bg-black/95 backdrop-blur-xl transition-all duration-500 ease-in-out md:hidden ${
+                    isOpen ? "translate-y-0 opacity-100 visible" : "-translate-y-full opacity-0 invisible"
+                }`}
+            >
+                <div className="flex h-[calc(100vh-80px)] flex-col overflow-y-auto custom-scrollbar">
+                    <div className="flex flex-col space-y-2 p-6 pb-20">
+                        {/* Main Links */}
                         <Link
                             href="/"
-                            className="text-base font-medium text-zinc-300 hover:text-white pb-2 border-b border-white/5"
+                            className="flex items-center p-4 rounded-2xl bg-white/5 hover:bg-white/10 transition-all"
                             onClick={() => setIsOpen(false)}
                         >
-                            Home
+                            <span className="text-lg font-semibold text-white">Home</span>
                         </Link>
-                        {/* Products for Mobile */}
-                        <div className="flex flex-col">
+
+                        {/* Products Accordion */}
+                        <div className="flex flex-col p-2 space-y-2">
                             <button 
                                 onClick={() => setIsMobileProductsOpen(!isMobileProductsOpen)}
-                                className="flex items-center justify-between text-base font-medium text-zinc-300 hover:text-white pb-2"
+                                className="flex items-center justify-between p-4 rounded-2xl bg-white/5 hover:bg-white/10 transition-all text-left"
                             >
-                                <span className="flex items-center gap-2">
-                                    Products
-                                </span>
-                                <ChevronDown className={`h-4 w-4 transition-transform duration-300 ${isMobileProductsOpen ? "rotate-180" : ""}`} />
+                                <span className="text-lg font-semibold text-white">Products</span>
+                                <ChevronDown className={`h-5 w-5 text-zinc-400 transition-transform duration-300 ${isMobileProductsOpen ? "rotate-180" : ""}`} />
                             </button>
                             
-                            <div className={`flex flex-col space-y-3 pl-4 overflow-hidden transition-all duration-300 ease-in-out ${isMobileProductsOpen ? "max-h-40 opacity-100 mt-2 mb-4" : "max-h-0 opacity-0"}`}>
-                                {[
-                                    { name: "Stocks", href: "/stocks" },
-                                    { name: "Crypto", href: "/crypto" },
-                                    { name: "Forex", href: "/forex" },
-                                ].map((item) => (
-                                    <Link
-                                        key={item.name}
-                                        href={item.href}
-                                        className="text-sm font-medium text-zinc-400 hover:text-white transition-colors"
-                                        onClick={() => setIsOpen(false)}
-                                    >
-                                        {item.name}
-                                    </Link>
-                                ))}
+                            <div className={`grid transition-all duration-300 ease-in-out ${isMobileProductsOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0 overflow-hidden"}`}>
+                                <div className="overflow-hidden">
+                                    <div className="flex flex-col gap-2 p-2 pl-4">
+                                        {[
+                                            { name: "Stocks", href: "/stocks", icon: "📈" },
+                                            { name: "ETFs", href: "/etfs", icon: "📊" },
+                                            { name: "Crypto", href: "/crypto", icon: "₿" },
+                                            { name: "Forex", href: "/forex", icon: "💱" },
+                                        ].map((item) => (
+                                            <Link
+                                                key={item.name}
+                                                href={item.href}
+                                                className="flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 transition-colors"
+                                                onClick={() => setIsOpen(false)}
+                                            >
+                                                <span className="text-xl">{item.icon}</span>
+                                                <span className="text-base font-medium text-zinc-300">{item.name}</span>
+                                            </Link>
+                                        ))}
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
-                        {/* Other Links for Mobile */}
-                        <Link
-                            href="/resources"
-                            className="text-base font-medium text-zinc-300 hover:text-white border-t border-white/5 pt-4"
-                            onClick={() => setIsOpen(false)}
-                        >
-                            Resources
-                        </Link>
+                        {/* Tools Accordion */}
+                        <div className="flex flex-col p-2 space-y-2">
+                             <button 
+                                onClick={() => setIsMobileUserOpen(!isMobileUserOpen)} // Repurposing state for generic mobile accordion if needed, but let's use a clear name
+                                className="flex items-center justify-between p-4 rounded-2xl bg-white/5 hover:bg-white/10 transition-all text-left"
+                            >
+                                <span className="text-lg font-semibold text-white">Tools & Resources</span>
+                                <ChevronDown className={`h-5 w-5 text-zinc-400 transition-transform duration-300 ${isMobileUserOpen ? "rotate-180" : ""}`} />
+                            </button>
+                            
+                            <div className={`grid transition-all duration-300 ease-in-out ${isMobileUserOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0 overflow-hidden"}`}>
+                                <div className="overflow-hidden">
+                                    <div className="flex flex-col gap-2 p-2 pl-4">
+                                        {[
+                                            { name: "Loyalty Program", href: "/resources", icon: "🎁" },
+                                            { name: "Profit Calculator", href: "/tools/profit-calculator", icon: "🧮" },
+                                            { name: "Market News", href: "/tools/market-news", icon: "📰" },
+                                            { name: "Glossary", href: "/tools/glossary", icon: "📚" },
+                                        ].map((item) => (
+                                            <Link
+                                                key={item.name}
+                                                href={item.href}
+                                                className="flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 transition-colors"
+                                                onClick={() => setIsOpen(false)}
+                                            >
+                                                <span className="text-xl">{item.icon}</span>
+                                                <span className="text-base font-medium text-zinc-300">{item.name}</span>
+                                            </Link>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <Link
                             href="/company"
-                            className="text-base font-medium text-zinc-300 hover:text-white border-t border-white/5 pt-4"
+                            className="flex items-center justify-between p-4 rounded-2xl bg-white/5 hover:bg-white/10 transition-all font-semibold"
                             onClick={() => setIsOpen(false)}
                         >
-                            Company
+                            <span>Company</span>
                         </Link>
                         <Link
                             href="/contact"
-                            className="text-base font-medium text-zinc-300 hover:text-white border-t border-white/5 pt-4"
+                            className="flex items-center justify-between p-4 rounded-2xl bg-white/5 hover:bg-white/10 transition-all font-semibold"
                             onClick={() => setIsOpen(false)}
                         >
-                            Contact
+                            <span>Contact</span>
                         </Link>
-                        <hr className="border-white/10" />
-                        <div className="flex flex-col gap-3 pt-2">
-                            <div className="flex items-center justify-between px-2">
-                                <span className="text-zinc-300 font-medium">Theme</span>
+
+                        <div className="mt-8 pt-6 border-t border-white/10 flex flex-col gap-6">
+                            <div className="flex items-center justify-between p-4 rounded-2xl bg-white/5">
+                                <span className="font-semibold">Display Theme</span>
                                 <button
                                     onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                                    className="rounded-full p-2 text-white hover:bg-white/10"
+                                    className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full border border-white/5 transition-all active:scale-95"
                                 >
-                                    {mounted ? (theme === "dark" ? <Sun size={20} /> : <Moon size={20} />) : <div className="h-5 w-5" />}
+                                    {mounted && (theme === "dark" ? <Sun size={18} /> : <Moon size={18} />)}
+                                    <span className="text-sm font-medium capitalize">{theme}</span>
                                 </button>
                             </div>
-                            {user ? (
-                                <div className="flex flex-col">
-                                    <button 
-                                        onClick={() => setIsMobileUserOpen(!isMobileUserOpen)}
-                                        className="flex items-center justify-between px-2 py-2"
-                                    >
-                                        <div className="flex items-center gap-3">
-                                            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 text-sm font-bold text-white uppercase">
-                                                {user.avatar ? (
-                                                    <img src={user.avatar} alt="User" className="h-10 w-10 rounded-xl object-cover" />
-                                                ) : (
-                                                    user.name.charAt(0)
-                                                )}
-                                            </div>
-                                            <div className="flex flex-col text-left">
-                                                <span className="text-sm font-bold text-white">{user.name}</span>
-                                                <span className="text-xs text-zinc-500">{user.email}</span>
-                                            </div>
-                                        </div>
-                                        <ChevronDown className={`h-4 w-4 text-zinc-400 transition-transform duration-300 ${isMobileUserOpen ? "rotate-180" : ""}`} />
-                                    </button>
 
-                                    <div className={`flex flex-col space-y-1 pl-12 overflow-hidden transition-all duration-300 ease-in-out ${isMobileUserOpen ? "max-h-48 opacity-100 mt-2 mb-2" : "max-h-0 opacity-0"}`}>
+                            {user ? (
+                                <div className="flex flex-col gap-3">
+                                    <div className="flex items-center gap-4 p-4">
+                                        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-600 text-lg font-bold text-white uppercase shadow-lg shadow-blue-500/20">
+                                            {user.avatar ? (
+                                                <img src={user.avatar} alt="User" className="h-12 w-12 rounded-2xl object-cover" />
+                                            ) : (
+                                                user.name.charAt(0)
+                                            )}
+                                        </div>
+                                        <div className="flex flex-col">
+                                            <p className="font-bold text-white">{user.name}</p>
+                                            <p className="text-xs text-zinc-500">{user.email}</p>
+                                        </div>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-3">
                                         <Link
                                             href="/dashboard"
-                                            className="block py-3 text-sm font-medium text-zinc-400 hover:text-white"
+                                            className="flex flex-col items-center justify-center p-4 rounded-2xl bg-white/5 hover:bg-blue-600/20 border border-white/5 transition-all text-sm font-semibold"
                                             onClick={() => setIsOpen(false)}
                                         >
                                             Dashboard
                                         </Link>
                                         <Link
                                             href="/profile"
-                                            className="block py-3 text-sm font-medium text-zinc-400 hover:text-white"
+                                            className="flex flex-col items-center justify-center p-4 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/5 transition-all text-sm font-semibold"
                                             onClick={() => setIsOpen(false)}
                                         >
                                             Profile
                                         </Link>
-                                        <button
-                                            onClick={() => {
-                                                logout();
-                                                setIsOpen(false);
-                                            }}
-                                            className="flex w-full items-center py-3 text-sm font-medium text-red-400 hover:text-red-300"
-                                        >
-                                            Logout
-                                        </button>
                                     </div>
+                                    <button
+                                        onClick={() => { logout(); setIsOpen(false); }}
+                                        className="w-full p-4 rounded-2xl bg-red-500/10 text-red-400 font-bold hover:bg-red-500/20 transition-all"
+                                    >
+                                        Logout
+                                    </button>
                                 </div>
                             ) : (
-                                <>
+                                <div className="grid grid-cols-2 gap-4">
                                     <Link
                                         href="/login"
-                                        className="flex w-full items-center justify-center rounded-full bg-white py-3 text-sm font-semibold text-black"
+                                        className="flex h-14 items-center justify-center rounded-2xl bg-white font-bold text-black"
                                         onClick={() => setIsOpen(false)}
                                     >
                                         Login
                                     </Link>
                                     <Link
                                         href="/signup"
-                                        className="flex w-full items-center justify-center rounded-full border border-white py-3 text-sm font-semibold text-white"
+                                        className="flex h-14 items-center justify-center rounded-2xl border-2 border-white font-bold text-white"
                                         onClick={() => setIsOpen(false)}
                                     >
                                         Sign Up
                                     </Link>
-                                </>
+                                </div>
                             )}
                         </div>
                     </div>
                 </div>
-            )}
+            </div>
         </nav>
     );
 }

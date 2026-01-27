@@ -22,6 +22,10 @@ export async function POST(req) {
          return NextResponse.json({ error: 'Please verify your email first', needsVerification: true }, { status: 403 });
     }
 
+    if (user.isBlocked) {
+        return NextResponse.json({ error: 'Your account has been suspended. Please contact support.', isBlocked: true }, { status: 403 });
+    }
+
     const isMatch = await comparePassword(password, user.password);
 
     if (!isMatch) {

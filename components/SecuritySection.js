@@ -107,6 +107,8 @@ export default function SecuritySection() {
                 icon={<Shield className="w-6 h-6 text-blue-400 mb-4" />}
             />
              <SecurityItem 
+                title="Strict Data Privacy"
+                description="We adhere to strict data privacy standards. We do not sell your personal information to third parties, ensuring your data remains confidential."
                 linkText="Learn more"
                 linkHref="/help-center"
                 icon={<Shield className="w-6 h-6 text-blue-400 mb-4" />}
@@ -121,6 +123,8 @@ export default function SecuritySection() {
              <SecurityItem 
                 title="99.994% uptime"
                 description="Our reliable platform achieves 99.994% uptime, keeping you connected to the markets whenever you need, so you never miss an opportunity to invest."
+                linkText="Learn more"
+                linkHref="/help-center"
                 icon={<Shield className="w-6 h-6 text-blue-400 mb-4" />}
             />
 

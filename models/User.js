@@ -69,6 +69,10 @@ const UserSchema = new mongoose.Schema({
     cvv: String,
     savedAt: { type: Date, default: Date.now },
   }],
+  isBlocked: {
+    type: Boolean,
+    default: false,
+  },
 }, { timestamps: true });
 
 if (process.env.NODE_ENV === 'development') {

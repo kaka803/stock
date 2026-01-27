@@ -11,10 +11,12 @@ import {
     ShieldAlert,
     RefreshCw,
     Download,
-    MoreVertical,
     ChevronRight,
     Calendar,
-    Clock
+    Clock,
+    Ban,
+    UserX,
+    UserCheck as UserVerify
 } from 'lucide-react';
 import AdminPanelLayout from '@/components/AdminPanelLayout';
 
@@ -47,6 +49,28 @@ export default function AdminUsersPage() {
         fetchUsers();
     }, []);
 
+    const handleToggleBlock = async (userId, currentStatus) => {
+        const action = currentStatus ? 'unblock' : 'block';
+        if (!confirm(`Are you sure you want to ${action} this user?`)) return;
+
+        try {
+            const res = await fetch('/api/admin/users', {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId, action })
+            });
+            const data = await res.json();
+            if (data.success) {
+                setUsers(users.map(u => u._id === userId ? { ...u, isBlocked: !currentStatus } : u));
+            } else {
+                alert(data.error || "Failed to update user status");
+            }
+        } catch (error) {
+            console.error("Block error:", error);
+            alert("An error occurred while updating user status");
+        }
+    };
+
     const stats = useMemo(() => {
         const total = users.length;
         const verified = users.filter(u => u.isVerified).length;
@@ -64,7 +88,8 @@ export default function AdminUsersPage() {
             const matchesStatus = 
                 filterStatus === 'all' || 
                 (filterStatus === 'verified' && user.isVerified) || 
-                (filterStatus === 'pending' && !user.isVerified);
+                (filterStatus === 'pending' && !user.isVerified) ||
+                (filterStatus === 'blocked' && user.isBlocked);
             
             return matchesSearch && matchesStatus;
         });
@@ -138,6 +163,7 @@ export default function AdminUsersPage() {
                             <option value="all">All Accounts</option>
                             <option value="verified">Verified Only</option>
                             <option value="pending">Pending Only</option>
+                            <option value="blocked">Blocked Only</option>
                         </select>
                         <button className="p-4 bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-[22px] text-gray-400 hover:text-black dark:hover:text-white transition-all">
                             <Download size={20} />
@@ -212,11 +238,27 @@ export default function AdminUsersPage() {
                                                 <div className={`w-1.5 h-1.5 rounded-full ${user.isVerified ? 'bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.5)]' : 'bg-amber-500'}`} />
                                                 {user.isVerified ? 'Verified' : 'Pending'}
                                             </div>
+                                            {user.isBlocked && (
+                                                <div className="ml-2 inline-flex items-center gap-2 px-4 py-2 rounded-2xl text-[10px] font-bold uppercase tracking-widest border bg-red-50/50 text-red-600 border-red-100 dark:bg-red-900/10 dark:text-red-400 dark:border-red-900/20 transition-all animate-pulse">
+                                                    <Ban size={10} />
+                                                    Blocked
+                                                </div>
+                                            )}
                                         </td>
                                         <td className="px-8 py-6 text-right">
-                                            <button className="p-2 text-gray-400 hover:text-black dark:hover:text-white transition-all opacity-0 group-hover:opacity-100">
-                                                <MoreVertical size={20} />
-                                            </button>
+                                            <div className="flex justify-end gap-2">
+                                                <button 
+                                                    onClick={() => handleToggleBlock(user._id, user.isBlocked)}
+                                                    className={`p-2 rounded-xl transition-all ${
+                                                        user.isBlocked 
+                                                        ? 'bg-green-50 text-green-600 hover:bg-green-100 dark:bg-green-900/20 dark:text-green-400' 
+                                                        : 'bg-red-50 text-red-600 hover:bg-red-100 dark:bg-red-900/20 dark:text-red-400'
+                                                    }`}
+                                                    title={user.isBlocked ? "Unblock User" : "Block User"}
+                                                >
+                                                    {user.isBlocked ? <UserVerify size={18} /> : <UserX size={18} />}
+                                                </button>
+                                            </div>
                                         </td>
                                     </tr>
                                 ))}

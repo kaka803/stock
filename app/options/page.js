@@ -4,8 +4,12 @@ import Footer from "@/components/Footer";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
+import { useRouter } from "next/navigation";
 
 export default function OptionsPage() {
+  const { user } = useAuth();
+  const router = useRouter();
   const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
   
   const options = Array(10).fill({
@@ -18,7 +22,7 @@ export default function OptionsPage() {
   });
 
   return (
-    <main className="min-h-screen bg-white dark:bg-black text-black dark:text-white selection:bg-blue-500/30 font-sans transition-colors duration-300">
+    <main className="min-h-screen w-full overflow-x-hidden bg-white dark:bg-black text-black dark:text-white selection:bg-blue-500/30 font-sans transition-colors duration-300">
       <Navbar />
       
       {/* Spacer for fixed navbar */}
@@ -33,12 +37,26 @@ export default function OptionsPage() {
                     Leverage your portfolio with advanced options trading strategies.
                 </p>
                 <div className="flex items-center gap-6">
-                    <button className="bg-black text-white dark:bg-white dark:text-black px-8 py-3 rounded-full font-semibold hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors">
-                        Sign Up
-                    </button>
-                    <Link href="#" className="text-blue-500 font-semibold hover:underline">
-                        Learn more
-                    </Link>
+                    {user ? (
+                        <button 
+                            onClick={() => router.push('/dashboard')}
+                            className="bg-black text-white dark:bg-white dark:text-black px-8 py-3 rounded-full font-semibold hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors"
+                        >
+                            Go to Dashboard
+                        </button>
+                    ) : (
+                        <>
+                            <button 
+                                onClick={() => router.push('/signup')}
+                                className="bg-black text-white dark:bg-white dark:text-black px-8 py-3 rounded-full font-semibold hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors"
+                            >
+                                Sign Up
+                            </button>
+                            <Link href="#" className="text-blue-500 font-semibold hover:underline">
+                                Learn more
+                            </Link>
+                        </>
+                    )}
                 </div>
             </div>
             <div className="relative w-full max-w-lg">
@@ -57,7 +75,7 @@ export default function OptionsPage() {
 
       {/* Index Section */}
       <section className="mx-auto max-w-7xl px-6 lg:px-12 py-12 mb-20">
-         <div className="flex gap-12">
+         <div className="flex flex-col gap-12">
             {/* Main Content */}
             <div className="flex-1">
                 <div className="mb-12">
@@ -65,43 +83,48 @@ export default function OptionsPage() {
                      <h2 className="text-4xl font-bold anta-regular">Options</h2>
                 </div>
 
-                {/* Table Header */}
-                <div className="grid grid-cols-12 text-sm text-gray-500 dark:text-gray-400 mb-6 px-4">
-                    <div className="col-span-6">Name</div>
-                    <div className="col-span-2">Price</div>
-                    <div className="col-span-2">Change</div>
-                    <div className="col-span-2"></div>
-                </div>
-
-                {/* Options List */}
-                <div className="space-y-2">
-                    {options.map((option, i) => (
-                        <div key={i} className="group grid grid-cols-12 items-center p-4 hover:bg-gray-50 dark:hover:bg-zinc-900 rounded-xl transition-colors">
-                            <div className="col-span-6 flex items-center gap-4">
-                                <div className="w-10 h-10 rounded-full bg-purple-600 text-[10px] text-white flex items-center justify-center font-bold">
-                                    OPT
-                                </div>
-                                <div>
-                                    <div className="font-semibold text-gray-900 dark:text-white">{option.name}</div>
-                                    <div className="text-xs text-gray-500 dark:text-gray-400 font-bold">{option.symbol}</div>
-                                </div>
-                            </div>
-                            <div className="col-span-2 font-medium">
-                                ${option.price}
-                            </div>
-                            <div className={`col-span-2 text-sm font-medium ${i % 2 === 0 ? 'text-green-500' : 'text-red-500'}`}>
-                                <div className="flex flex-col">
-                                    <span>{i % 2 === 0 ? '↑' : '↓'} {option.change}</span>
-                                    <span className="text-xs text-gray-400 dark:text-gray-500">{option.changeValue}</span>
-                                </div>
-                            </div>
-                            <div className="col-span-2 text-right">
-                                <button className="text-blue-500 font-semibold hover:underline text-sm opacity-0 group-hover:opacity-100 transition-opacity">
-                                    Trade
-                                </button>
-                            </div>
+                {/* Responsive Table Container */}
+                <div className="w-full overflow-x-auto pb-4 custom-scrollbar">
+                    <div className="min-w-[500px]">
+                        {/* Table Header */}
+                        <div className="grid grid-cols-12 text-sm text-gray-500 dark:text-gray-400 mb-6 px-4">
+                            <div className="col-span-6">Name</div>
+                            <div className="col-span-2">Price</div>
+                            <div className="col-span-2">Change</div>
+                            <div className="col-span-2"></div>
                         </div>
-                    ))}
+
+                        {/* Options List */}
+                        <div className="space-y-2">
+                            {options.map((option, i) => (
+                                <div key={i} className="group grid grid-cols-12 items-center p-4 hover:bg-gray-50 dark:hover:bg-zinc-900 rounded-xl transition-colors">
+                                    <div className="col-span-6 flex items-center gap-4">
+                                        <div className="w-10 h-10 rounded-full bg-purple-600 text-[10px] text-white flex items-center justify-center font-bold">
+                                            OPT
+                                        </div>
+                                        <div>
+                                            <div className="font-semibold text-gray-900 dark:text-white">{option.name}</div>
+                                            <div className="text-xs text-gray-500 dark:text-gray-400 font-bold">{option.symbol}</div>
+                                        </div>
+                                    </div>
+                                    <div className="col-span-2 font-medium">
+                                        ${option.price}
+                                    </div>
+                                    <div className={`col-span-2 text-sm font-medium ${i % 2 === 0 ? 'text-green-500' : 'text-red-500'}`}>
+                                        <div className="flex flex-col">
+                                            <span>{i % 2 === 0 ? '↑' : '↓'} {option.change}</span>
+                                            <span className="text-xs text-gray-400 dark:text-gray-500">{option.changeValue}</span>
+                                        </div>
+                                    </div>
+                                    <div className="col-span-2 text-right">
+                                        <button className="text-blue-500 font-semibold hover:underline text-sm opacity-0 group-hover:opacity-100 transition-opacity">
+                                            Trade
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
                 </div>
 
                 {/* Pagination */}
