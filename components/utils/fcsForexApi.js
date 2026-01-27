@@ -39,32 +39,46 @@ export async function fetchTopForex() {
   return fetchPromise;
 }
 
+let detailFetchPromises = new Map();
+
 export async function fetchForexDetail(symbol) {
     if (!symbol) return null;
-  
-    try {
-      const res = await fetch(`/api/forex?symbol=${symbol}`);
-      const data = await res.json();
-  
-      if (!data.status || !Array.isArray(data.response)) return null;
-  
-      const item = data.response[0];
-  
-      return {
-        name: item.name || item.symbol,
-        symbol: item.symbol,
-        price: Number(item.price),
-        change: Number(item.change),
-        changeValue: Number(item.changeValue),
-        isNegative: item.isNegative,
-        high: Number(item.high),
-        low: Number(item.low),
-        open: Number(item.open || item.price),
-        description: `${item.name || item.symbol} is a major currency pair in the global forex market.`
-      };
-  
-    } catch (error) {
-      console.error("❌ Forex Detail Fetch Error:", error);
-      return null;
+    const cleanSymbol = symbol.toUpperCase();
+    
+    if (detailFetchPromises.has(cleanSymbol)) {
+        return detailFetchPromises.get(cleanSymbol);
     }
+  
+    const fetchPromise = (async () => {
+        try {
+          const res = await fetch(`/api/forex?symbol=${encodeURIComponent(cleanSymbol)}`);
+          const data = await res.json();
+      
+          if (!data.status || !Array.isArray(data.response)) return null;
+      
+          const item = data.response[0];
+      
+          return {
+            name: item.name || item.symbol,
+            symbol: item.symbol,
+            price: Number(item.price),
+            change: Number(item.change),
+            changeValue: Number(item.changeValue),
+            isNegative: item.isNegative,
+            high: Number(item.high),
+            low: Number(item.low),
+            open: Number(item.open || item.price),
+            description: `${item.name || item.symbol} is a major currency pair in the global forex market.`
+          };
+      
+        } catch (error) {
+          console.error("❌ Forex Detail Fetch Error:", error);
+          return null;
+        } finally {
+          detailFetchPromises.delete(cleanSymbol);
+        }
+    })();
+
+    detailFetchPromises.set(cleanSymbol, fetchPromise);
+    return fetchPromise;
 }

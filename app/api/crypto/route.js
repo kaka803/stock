@@ -100,9 +100,21 @@ const getIconUrl = (symbol) => {
 
 const BINANCE_BASE = "https://api.binance.com/api/v3/ticker/24hr";
 
+// Simple In-Memory Cache for Server Instance
+const cache = new Map();
+const CACHE_DURATION = 60 * 1000; // 1 minute
+
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
   const symbol = searchParams.get('symbol');
+  
+  // Use independent cache key based on symbol query
+  const cacheKey = symbol || 'ALL_SYMBOLS';
+  const cachedData = cache.get(cacheKey);
+
+  if (cachedData && (Date.now() - cachedData.timestamp < CACHE_DURATION)) {
+    return NextResponse.json({ status: true, response: cachedData.data, source: 'cache' });
+  }
 
   try {
     const response = await fetch(BINANCE_BASE);
@@ -146,6 +158,12 @@ export async function GET(request) {
         if (uniqueHelper.has(item.symbol)) return false;
         uniqueHelper.add(item.symbol);
         return true;
+    });
+
+    // Store in Cache
+    cache.set(cacheKey, {
+        data: result,
+        timestamp: Date.now()
     });
 
     return NextResponse.json({ status: true, response: result });

@@ -41,6 +41,10 @@ const OrderSchema = new mongoose.Schema({
     name: String,
     value: Number, // Percentage
   },
+  isCustom: {
+    type: Boolean,
+    default: false,
+  },
 }, { timestamps: true });
 
 OrderSchema.index({ createdAt: -1 });

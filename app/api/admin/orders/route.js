@@ -67,7 +67,8 @@ export async function PUT(req) {
               symbol: updatedOrder.symbol,
               type: updatedOrder.type,
               quantity: updatedOrder.quantity,
-              price: updatedOrder.price, // Average price logic could be complex, for now just pushing transaction or item
+              price: updatedOrder.price, 
+              isCustom: updatedOrder.isCustom || false,
               date: new Date()
           };
 

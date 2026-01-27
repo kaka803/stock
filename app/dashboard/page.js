@@ -1,7 +1,7 @@
 "use client";
 
 import { useAuth } from "@/context/AuthContext";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Search, Bell, ChevronDown, LayoutDashboard, LineChart, Wallet, CreditCard, ArrowRightLeft, LogOut, Sun, Moon, FileText, Menu, X } from "lucide-react";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
@@ -40,8 +40,8 @@ const getSimulatedCurrentPrice = (symbol, buyPrice) => {
 };
 
 export default function Dashboard() {
-    const { user, logout, loading } = useAuth();
-    const { stocks, loadStocks } = useStock(); // Custom Hook for Global Market Data
+    const { user, logout, loading, refreshUser } = useAuth();
+    const { stocks, loadStocks } = useStock(); 
     const router = useRouter();
     const [mount, setMount] = useState(false);
     const { theme, setTheme } = useTheme();
@@ -53,6 +53,8 @@ export default function Dashboard() {
     const [marketPrices, setMarketPrices] = useState({});
     const [marketLoading, setMarketLoading] = useState(false);
     const [fetchError, setFetchError] = useState(false);
+
+    // Withdrawal State
     const [withdrawHistory, setWithdrawHistory] = useState([]);
     const [withdrawLoading, setWithdrawLoading] = useState(false);
     const [withdrawForm, setWithdrawForm] = useState({
@@ -63,19 +65,25 @@ export default function Dashboard() {
         paymentDetail: ''
     });
 
-    // Initial Load of Top 100 Stocks
-    useEffect(() => {
-        loadStocks();
-    }, []);
-
-    // Fetch Market Data Logic (For User Portfolio)
-    const fetchPortfolioMarketData = async () => {
+    const lastFetchRef = useRef(0);
+    const isFetchingRef = useRef(false);
+    const FETCH_COOLDOWN = 10000; // 10 seconds cooldown for frontend re-fetching
+    
+    // MEMOIZE fetchPortfolioMarketData to avoid infinite loops in useEffect
+    const fetchPortfolioMarketData = useCallback(async (force = false) => {
         if (!user || !user.portfolio || user.portfolio.length === 0) {
             setMarketLoading(false);
             return;
         }
 
+        // Freshness check: skip if fetched within COOLDOWN unless forced
+        if (!force && (isFetchingRef.current || (Date.now() - lastFetchRef.current < FETCH_COOLDOWN))) {
+            return;
+        }
+
+        isFetchingRef.current = true;
         setMarketLoading(true);
+        lastFetchRef.current = Date.now();
         setFetchError(false);
         try {
             // 1. Identify Symbols from Portfolio
@@ -113,8 +121,12 @@ export default function Dashboard() {
             }
 
             if (forexSymbols.length > 0) {
-                const uniqueForex = [...new Set(forexSymbols)].join(',');
-                requests.push(fetch(`/api/forex?symbol=${uniqueForex}`).then(res => res.json()));
+                const uniqueForex = [...new Set(forexSymbols.filter(s => typeof s === 'string' && s.length > 0))].join(',');
+                if (uniqueForex) {
+                    requests.push(fetch(`/api/forex?symbol=${encodeURIComponent(uniqueForex)}`).then(res => res.json()));
+                } else {
+                    requests.push(Promise.resolve({ status: true, response: [] }));
+                }
             } else {
                 requests.push(Promise.resolve({ status: true, response: [] }));
             }
@@ -165,15 +177,24 @@ export default function Dashboard() {
             setFetchError(true);
         } finally {
             setMarketLoading(false);
+            isFetchingRef.current = false;
         }
-    };
+    }, [user]); // Only recreate if user object changes
+
+    // Initial Load of Top 100 Stocks + User Profile Refresh
+    useEffect(() => {
+        loadStocks();
+        if (typeof refreshUser === 'function') {
+            refreshUser();
+        }
+    }, [loadStocks, refreshUser]);
 
     // Fetch portfolio prices on mount if Dashboard or User Assets is active
     useEffect(() => {
         if (activeTab === 'User Assets' || activeTab === 'Dashboard') {
             fetchPortfolioMarketData();
         }
-    }, [activeTab, user]);
+    }, [activeTab, user, fetchPortfolioMarketData]);
 
     
     // Portfolio Calculation
@@ -202,7 +223,10 @@ export default function Dashboard() {
             if (!asset.symbol) return;
             const lookupKey = `${asset.type.toUpperCase()}_${asset.symbol.toUpperCase()}`;
             const realPrice = marketPrices[lookupKey];
+            
+            // For custom stocks, realPrice will come from our DB via the same API
             const currentPrice = (realPrice !== undefined && !isNaN(realPrice)) ? realPrice : asset.price;
+            
             pv += currentPrice * asset.quantity;
             ti += asset.price * asset.quantity;
         });

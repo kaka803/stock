@@ -50,6 +50,10 @@ const POPULAR_PAIRS = [
   "SEK/SGD", "SEK/HKD", "SEK/ZAR", "SEK/TRY", "SEK/MXN", "SEK/NOK"
 ];
 
+// Simple In-Memory Cache for Server Instance
+const cache = new Map();
+const CACHE_DURATION = 60 * 1000; // 1 minute
+
 export async function GET(req) {
   try {
     const { searchParams } = new URL(req.url);
@@ -57,24 +61,43 @@ export async function GET(req) {
 
     // Limit to first 150 unique symbols to avoid excessive URL length or API limits
     let symbolsToFetch = [...new Set(requestedSymbols.length > 0 ? requestedSymbols : POPULAR_PAIRS)].slice(0, 150);
+    
+    // Check Cache for the exact symbol string requested
+    const cacheKey = symbolsToFetch.sort().join(',');
+    const cachedData = cache.get(cacheKey);
+    
+    if (cachedData && (Date.now() - cachedData.timestamp < CACHE_DURATION)) {
+      return NextResponse.json({ status: true, response: cachedData.data, source: 'cache' });
+    }
 
     if (!API_KEY) {
-      console.error("FCS API Key is missing");
-      return NextResponse.json({ status: false, msg: "API Key missing" }, { status: 500 });
+        console.error("FCS API Key is missing");
+        return NextResponse.json({ status: false, msg: "API Key missing" }, { status: 500 });
     }
 
     // Function to fetch a batch of symbols
     const fetchBatch = async (symbols) => {
-        const symbolsString = symbols.join(',');
-        const params = new URLSearchParams({
-            symbol: symbolsString,
-            access_key: API_KEY
-        });
-        const url = `${BASE_URL}?${params.toString()}`;
-        
-        
-        const response = await fetch(url);
-        return response.json();
+        try {
+            const symbolsString = symbols.join(',');
+            const params = new URLSearchParams({
+                symbol: symbolsString,
+                access_key: API_KEY
+            });
+            const url = `${BASE_URL}?${params.toString()}`;
+            
+            const response = await fetch(url);
+            
+            // If not OK, read as text to avoid JSON parse crash
+            if (!response.ok) {
+                const text = await response.text();
+                return { status: false, msg: `API returned ${response.status}`, details: text };
+            }
+
+            return await response.json();
+        } catch (err) {
+            console.error("fetchBatch error:", err);
+            return { status: false, msg: err.message };
+        }
     };
 
     // Split symbols into batches of 150
@@ -110,6 +133,13 @@ export async function GET(req) {
             open: item.o,
             time: item.t
         }));
+
+        // Store in Cache
+        cache.set(cacheKey, {
+            data: mappedResult,
+            timestamp: Date.now()
+        });
+
         return NextResponse.json({ status: true, response: mappedResult });
     }
 

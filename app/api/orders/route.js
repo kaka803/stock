@@ -35,6 +35,13 @@ export async function POST(req) {
         return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
+    // Check if it's a custom stock to save in order status
+    let isCustom = false;
+    if (type === 'stock') {
+        const customStock = await Stock.findOne({ symbol: symbol.toUpperCase(), isCustom: true });
+        if (customStock) isCustom = true;
+    }
+
     const newOrder = await Order.create({
       user: decoded.userId,
       type,
@@ -46,7 +53,8 @@ export async function POST(req) {
       status: 'pending',
       originalTotal,
       discountAmount,
-      appliedCardInfo
+      appliedCardInfo,
+      isCustom
     });
 
     // Handle Freeze Card Usage
